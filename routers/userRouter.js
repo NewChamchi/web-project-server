@@ -38,11 +38,9 @@ userRouter.post("/join", async (req, res) => {
 userRouter.get("/mypage", async (req, res) => {
     try {
     const { id } = req.query;
-    const seats = await Seat.find({ member: id }, "name");
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({ error : error.message });
-    }
-})
-
-module.exports = userRouter;
+    const seats = await Seat.find({ member: id }, "name")
+    .populate('ticketing').find("startTime")
+    .populate('movie').find('name');
+    } catch (err) {
+        console.log(err);
+        res.status(500

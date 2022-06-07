@@ -15,18 +15,17 @@ mainRouter.get("/", async (req, res) => {
     return res.send({ movies });
 });
 
-mainRouter.post("/movie", async(req, res) => {
-    try {
-        const movie = new Movie(req.body);
-        await movie.save();
-        return res.send({ movie });
-    }
-    catch (err) {
-        console.log(err);
-        return res.status(400).send({ err: err.message });
-    }
-});
+// mainRouter.post("/", async(req, res) => {
+//     try {
+//         const movie = new Movie(req.body);
+//         await movie.save();
+//         return res.send({ movie });
+//     }
+//     catch (err) {
+//         console.log(err);
+//         return res.status(400).send({ err: err.message });
+//     }
+// });
 
 
 
-module.exports = mainRouter;
