@@ -7,9 +7,10 @@ const SeatSchema = new Schema(
             row: String, // 영어 대문자
         },
         ticketing: { type: Types.ObjectId, required: true, ref: "Ticketing" },
-        member: { type: Types.ObjectId, required: true, ref: "Member" },
+        member: { type: Types.ObjectId, ref: "Member" },
+        isBooked: { type: Number, required: true },
     },
-    { timestamps : true }
+    { timestamps: true }
 );
 
 const Seat = model("Seat", SeatSchema);
