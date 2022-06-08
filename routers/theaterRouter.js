@@ -115,7 +115,7 @@ theaterRouter.get("/ticket/seat/:ticketing_id", async (req, res) => {
         {_id: movieIdStorage[0].movie_id},
         {$set: {bookingRate: bookingRateStorage[0].bookingRate}}
     )
-    return res.send({ movieIdStorage, seats  });
+    return res.send({ seats });
 })
 
 theaterRouter.put("/ticket/seat/:ticketing_id", async (req, res) => {

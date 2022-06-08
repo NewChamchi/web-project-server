@@ -1,4 +1,5 @@
 const express = require("express");
+const express_session = require('express-session');
 const userRouter = express.Router();
 const { Member } = require("../models/member");
 const { Ticketing } = require("../models/ticketing");
@@ -12,6 +13,10 @@ userRouter.get("/login", async (req, res) => {
             { password: password }
         ]
     });
+    if(member[0]._id) {
+        req.session.user_id = id;
+        console.log(id)
+    }
     return res.send({ member });
 })
 
@@ -47,6 +52,24 @@ userRouter.get("/mypage", async (req, res) => {
         console.log(err);
         res.status(500).send({ err : err.message });
     }
+})
+
+userRouter.get('/logout', async (req, res) =>{
+    const session = req.session
+    try {
+        if (session.user_id) { // 세션 정보가 존재하는 경우
+            await req.session.destroy( (err) => {
+                if (err) {
+                console.log(err)
+                } else {
+                    res.redirect('/login'); // 클라이언트를 첫 페이지로 이동
+                }
+            })
+        }
+    } catch (e) {
+        console.log(e);
+    }
+    res.redirect('/login');
 })
 
 module.exports = userRouter;
