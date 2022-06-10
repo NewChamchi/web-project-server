@@ -2,32 +2,23 @@
   "name": "web-project",
   "version": "1.0.0",
   "description": "2022F 웹 프로그래밍 프로젝트 서버",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "devstart": "nodemon server.js"
   },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^2.0.16"
-  },
-  "dependencies": {
-    "connect-mongo": "^4.6.0",
-    "connect-mongodb-session": "^3.1.1",
-    "express": "^4.18.1",
-    "express-session": "^1.17.3",
-    "mongodb": "^4.7.0",
-    "mongoose": "^6.3.6",
-    "mongoose-session": "^0.0.4"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NewChamchi/web-project-server.git"
   },
+  "author": "",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/NewChamchi/web-project-server/issues"
   },
-  "homepage": "https://github.com/NewChamchi/web-project-server#readme"
+  "homepage": "https://github.com/NewChamchi/web-project-server#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  }
 }

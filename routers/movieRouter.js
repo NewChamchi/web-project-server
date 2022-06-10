@@ -25,28 +25,34 @@ movieRouter.get("/", async (req, res) => {
 movieRouter.get("/detail-view", async (req, res) => {
     const { movie_id } = req.query;
     const comment = await Comment.find({ movie: movie_id }, "comment point")
-    .populate('member', 'name');
-    const avgPointStorage = await Comment.aggregate([
-        {
-            '$match': { 'movie' : mongoose.Types.ObjectId(movie_id)}
-        },
-        {
-            '$group': {
-                '_id': 'null',
-                'pointSum': { '$sum': '$point' },
-                'pointTotal': { '$sum': 1 },
+        .populate('member', 'name');
+    var avgPoint;
+    if (comment[0] == undefined) {
+        console.log(comment[0]);
+        avgPoint = 0;
+    } else {
+        const avgPointStorage = await Comment.aggregate([
+            {
+                '$match': { 'movie': mongoose.Types.ObjectId(movie_id) }
+            },
+            {
+                '$group': {
+                    '_id': 'null',
+                    'pointSum': { '$sum': '$point' },
+                    'pointTotal': { '$sum': 1 },
+                }
+            },
+            {
+                '$project': {
+                    'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
+                }
             }
-        },
-        {
-            '$project': {
-                'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
-            }
-        }
-    ]);
-    console.log(avgPointStorage[0].avgPoint);
+        ]);
+        avgPoint = avgPointStorage[0].avgPoint;
+    }
     const movie = await Movie.findByIdAndUpdate(
         movie_id,
-        { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+        { $set: { scores: { avgPoint: avgPoint } } },
         { new: true },
     );
     return res.send({ movie, comment });
@@ -59,7 +65,7 @@ movieRouter.post("/detail-view", async (req, res) => {
         await commentInsert.save();
         const avgPointStorage = await Comment.aggregate([
             {
-                '$match': { 'movie' : mongoose.Types.ObjectId(movie_id)}
+                '$match': { 'movie': mongoose.Types.ObjectId(movie_id) }
             },
             {
                 '$group': {
@@ -77,7 +83,7 @@ movieRouter.post("/detail-view", async (req, res) => {
         console.log(avgPointStorage[0].avgPoint);
         const movieUpdate = await Movie.findByIdAndUpdate(
             movie_id,
-            { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+            { $set: { scores: { avgPoint: avgPointStorage[0].avgPoint } } },
             { new: true },
         );
         return res.send({ movieUpdate, commentInsert });
@@ -91,12 +97,12 @@ movieRouter.put("/detail-view", async (req, res) => {
     try {
         const { comment, point, movie, member } = req.body;
         const commentUpdate = await Comment.updateOne(
-            { $and: [{ movie: movie }, { member: member }]},
-            { $set: { comment: comment ,  point: point }}
+            { $and: [{ movie: movie }, { member: member }] },
+            { $set: { comment: comment, point: point } }
         );
         const avgPointStorage = await Comment.aggregate([
             {
-                '$match': { 'movie' : mongoose.Types.ObjectId(movie)}
+                '$match': { 'movie': mongoose.Types.ObjectId(movie) }
             },
             {
                 '$group': {
@@ -114,7 +120,7 @@ movieRouter.put("/detail-view", async (req, res) => {
         console.log(avgPointStorage[0].avgPoint);
         const movieUpdate = await Movie.findByIdAndUpdate(
             movie,
-            { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+            { $set: { scores: { avgPoint: avgPointStorage[0].avgPoint } } },
             { new: true },
         );
         return res.send({ movieUpdate, commentUpdate });
@@ -130,27 +136,35 @@ movieRouter.delete("/detail-view", async (req, res) => {
         const commentDelete = await Comment.deleteOne(
             { $and: [{ movie: movie }, { member: member }] }
         );
-        const avgPointStorage = await Comment.aggregate([
-            {
-                '$match': { 'movie' : mongoose.Types.ObjectId(movie)}
-            },
-            {
-                '$group': {
-                    '_id': 'null',
-                    'pointSum': { '$sum': '$point' },
-                    'pointTotal': { '$sum': 1 },
+        const comment = await Comment.find({ movie: movie }, "comment point")
+            .populate('member', 'name');
+        var avgPoint;
+        if (comment[0] == undefined) {
+            console.log(comment[0]);
+            avgPoint = 0;
+        } else {
+            const avgPointStorage = await Comment.aggregate([
+                {
+                    '$match': { 'movie': mongoose.Types.ObjectId(movie_id) }
+                },
+                {
+                    '$group': {
+                        '_id': 'null',
+                        'pointSum': { '$sum': '$point' },
+                        'pointTotal': { '$sum': 1 },
+                    }
+                },
+                {
+                    '$project': {
+                        'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
+                    }
                 }
-            },
-            {
-                '$project': {
-                    'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
-                }
-            }
-        ]);
-        console.log(avgPointStorage[0].avgPoint);
+            ]);
+            avgPoint = avgPointStorage[0].avgPoint;
+        }
         const movieUpdate = await Movie.findByIdAndUpdate(
-            movie,
-            { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+            movie_id,
+            { $set: { scores: { avgPoint: avgPoint } } },
             { new: true },
         );
         return res.send({ movieUpdate, commentDelete });
