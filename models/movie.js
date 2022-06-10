@@ -16,7 +16,6 @@ const MovieSchema = new Schema(
             bookingRate : Number,
             avgPoint : Number,
         },
-        // comments: [{ type : Types.ObjectId }],
         ticketings : [{ type : Types.ObjectId , ref: 'Ticketing'}],
     },
     { timestamps: true }
