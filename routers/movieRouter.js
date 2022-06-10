@@ -163,7 +163,7 @@ movieRouter.delete("/detail-view", async (req, res) => {
             avgPoint = avgPointStorage[0].avgPoint;
         }
         const movieUpdate = await Movie.findByIdAndUpdate(
-            movie_id,
+            movie,
             { $set: { scores: { avgPoint: avgPoint } } },
             { new: true },
         );
