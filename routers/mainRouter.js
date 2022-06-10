@@ -13,7 +13,7 @@ mainRouter.use("/theater", theaterRouter);
 mainRouter.get("/", async (req, res) => {
     console.log(req.query);
     const movies = await Movie.find({},
-        "contents.name contents.poster scores.bookingRate scores.avgPoint")
+        "_id contents.name contents.poster scores.bookingRate scores.avgPoint")
         .sort({'scores.bookingRate' : -1});
     // const movies = await Movie.aggregate([
     //     { '$unwind': '$ticketings' },
