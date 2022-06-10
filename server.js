@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const MongoStore = require("connect-mongo");
 const mainRouter = require("./routers/mainRouter");
 const hostname = "127.0.0.1";
-const port = 3000;
+const port = 8080;
 const DB_URI = "mongodb://127.0.0.1:27017/testdb2";
 mongoose.connect(DB_URI);
 
