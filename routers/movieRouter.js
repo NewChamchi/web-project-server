@@ -86,7 +86,9 @@ movieRouter.post("/detail-view", async (req, res) => {
             { $set: { scores: { avgPoint: avgPointStorage[0].avgPoint } } },
             { new: true },
         );
-        return res.send({ movieUpdate, commentInsert });
+        return res.status(201).json({
+            success : true
+        });
     } catch (err) {
         console.log(err)
         return res.status(400).send({ err: err.message });
@@ -123,7 +125,9 @@ movieRouter.put("/detail-view", async (req, res) => {
             { $set: { scores: { avgPoint: avgPointStorage[0].avgPoint } } },
             { new: true },
         );
-        return res.send({ movieUpdate, commentUpdate });
+        return res.status(200).json({
+            success : true
+        });
     } catch (err) {
         console.log(err)
         return res.status(400).send({ err: err.message });
@@ -167,7 +171,9 @@ movieRouter.delete("/detail-view", async (req, res) => {
             { $set: { scores: { avgPoint: avgPoint } } },
             { new: true },
         );
-        return res.send({ movieUpdate, commentDelete });
+        return res.status(200).json({
+            success : true
+        });
     } catch (err) {
         console.log(err)
         return res.status(404).send({ err: err.message });

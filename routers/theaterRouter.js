@@ -14,7 +14,7 @@ theaterRouter.get("/", async (req, res) => {
 })
 
 theaterRouter.get("/ticket", async (req, res) => {
-    const movie = await Movie.find({}, "contents.name contents.ageLimit")
+    const movie = await Movie.find({}, "_id contents.name contents.ageLimit")
     return res.send({ movie });
 })
 
@@ -37,84 +37,84 @@ theaterRouter.get("/ticket/seat/:ticketing_id", async (req, res) => {
             populate: { path: 'theater', select: 'name floor totalSeatCount' },
             select: 'startTime bookingSeatCount'
         });
-    const SeatCountStorage = await Seat.aggregate([
-        {
-            '$match': { 'ticketing': mongoose.Types.ObjectId(ticketing_id) }
-        },
-        {
-            '$group': {
-                '_id': 'null',
-                'bookingSeatCount': { '$sum': '$isBooked' },
-                'totalSeatCount': { '$sum': 1 },
-            }
-        }
-    ]);
-    console.log(SeatCountStorage[0].bookingSeatCount);
-    console.log(SeatCountStorage[0].totalSeatCount);
-    const movieIdStorage = await Seat.aggregate([
-        {
-            '$lookup': {
-                from: 'ticketings',
-                localField: 'ticketing',
-                foreignField: '_id',
-                as: 'ticketing_info'
-            }
-        },
-        { '$unwind': '$ticketing_info' },
-        {
-            '$group': {
-                '_id': {
-                    'movie': '$ticketing_info.movie',
-                },
+    // const SeatCountStorage = await Seat.aggregate([
+    //     {
+    //         '$match': { 'ticketing': mongoose.Types.ObjectId(ticketing_id) }
+    //     },
+    //     {
+    //         '$group': {
+    //             '_id': 'null',
+    //             'bookingSeatCount': { '$sum': '$isBooked' },
+    //             'totalSeatCount': { '$sum': 1 },
+    //         }
+    //     }
+    // ]);
+    // console.log(SeatCountStorage[0].bookingSeatCount);
+    // console.log(SeatCountStorage[0].totalSeatCount);
+    // const movieIdStorage = await Seat.aggregate([
+    //     {
+    //         '$lookup': {
+    //             from: 'ticketings',
+    //             localField: 'ticketing',
+    //             foreignField: '_id',
+    //             as: 'ticketing_info'
+    //         }
+    //     },
+    //     { '$unwind': '$ticketing_info' },
+    //     {
+    //         '$group': {
+    //             '_id': {
+    //                 'movie': '$ticketing_info.movie',
+    //             },
 
-            }
-        },
-        {
-            '$project': {
-                'movie_id': '$_id.movie'
-            }
-        }
-    ])
-    console.log(movieIdStorage[0].movie_id);
-    const bookingRateStorage = await Seat.aggregate([
-        {
-            '$lookup': {
-                from: 'ticketings',
-                localField: 'ticketing',
-                foreignField: '_id',
-                as: 'ticketing_info'
-            }
-        },
-        { '$unwind': '$ticketing_info' },
-        {
-            '$match': { 'ticketing_info.movie': mongoose.Types.ObjectId(movieIdStorage[0].movie_id) }
-        },
-        {
-            '$group': {
-                '_id' : 'null',
-                'bookingSeatCount': { '$sum': '$isBooked' },
-                'totalSeatCount': { '$sum': 1 },
-            }
-        },
-        {
-            '$project': {
-                'bookingRate': {'$multiply': [{'$divide': ['$bookingSeatCount', '$totalSeatCount']}, 100]}
-            }
-        }
-    ])
-    console.log(bookingRateStorage[0].bookingRate)
-    const ticketingUpdate = await Ticketing.updateOne(
-        {_id: ticketing_id},
-        {$set: {bookingSeatCount: SeatCountStorage[0].bookingSeatCount}}
-    )
-    const theaterUpdate = await Theater.updateOne(
-        {ticketings: {$elemMatch:{$eq:mongoose.Types.ObjectId(ticketing_id)}}},
-        {$set: {totalSeatCount: SeatCountStorage[0].totalSeatCount}}
-    )
-    const movieUpdate = await Movie.updateOne(
-        {_id: movieIdStorage[0].movie_id},
-        {$set: {bookingRate: bookingRateStorage[0].bookingRate}}
-    )
+    //         }
+    //     },
+    //     {
+    //         '$project': {
+    //             'movie_id': '$_id.movie'
+    //         }
+    //     }
+    // ])
+    // console.log(movieIdStorage[0].movie_id);
+    // const bookingRateStorage = await Seat.aggregate([
+    //     {
+    //         '$lookup': {
+    //             from: 'ticketings',
+    //             localField: 'ticketing',
+    //             foreignField: '_id',
+    //             as: 'ticketing_info'
+    //         }
+    //     },
+    //     { '$unwind': '$ticketing_info' },
+    //     {
+    //         '$match': { 'ticketing_info.movie': mongoose.Types.ObjectId(movieIdStorage[0].movie_id) }
+    //     },
+    //     {
+    //         '$group': {
+    //             '_id' : 'null',
+    //             'bookingSeatCount': { '$sum': '$isBooked' },
+    //             'totalSeatCount': { '$sum': 1 },
+    //         }
+    //     },
+    //     {
+    //         '$project': {
+    //             'bookingRate': {'$multiply': [{'$divide': ['$bookingSeatCount', '$totalSeatCount']}, 100]}
+    //         }
+    //     }
+    // ])
+    // console.log(bookingRateStorage[0].bookingRate)
+    // const ticketingUpdate = await Ticketing.updateOne(
+    //     {_id: ticketing_id},
+    //     {$set: {bookingSeatCount: SeatCountStorage[0].bookingSeatCount}}
+    // )
+    // const theaterUpdate = await Theater.updateOne(
+    //     {ticketings: {$elemMatch:{$eq:mongoose.Types.ObjectId(ticketing_id)}}},
+    //     {$set: {totalSeatCount: SeatCountStorage[0].totalSeatCount}}
+    // )
+    // const movieUpdate = await Movie.updateOne(
+    //     {_id: movieIdStorage[0].movie_id},
+    //     {$set: {bookingRate: bookingRateStorage[0].bookingRate}}
+    // )
     return res.send({ seats });
 })
 
@@ -204,7 +204,9 @@ theaterRouter.put("/ticket/seat/:ticketing_id", async (req, res) => {
             {_id: movieIdStorage[0].movie_id},
             {$set: {bookingRate: bookingRateStorage[0].bookingRate}}
         )
-        return res.send({ seatUpdate });
+        return res.status(200).json({
+            success : true
+        });
     } catch (err) {
         console.log(err)
         return res.status(400).send({ err: err.message });

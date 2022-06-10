@@ -22,7 +22,7 @@ userRouter.get("/login", async (req, res) => {
     } else {
         return res.send({ isExist: false });
     }
-})
+});
 
 userRouter.get("/join", async (req, res) => {
     const { id } = req.query;
@@ -46,6 +46,12 @@ userRouter.post("/join", async (req, res) => {
         console.log(err);
         return res.status(400).send({ err: err.message });
     }
+});
+
+userRouter.get("/get_member_oid", async (req, res) => {
+    const { id } = req.query;
+    const member = await Member.find({ id: id }, "_id");
+    return res.send({ member });
 });
 
 userRouter.get("/mypage", async (req, res) => {
