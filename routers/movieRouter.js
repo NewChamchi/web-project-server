@@ -54,9 +54,33 @@ movieRouter.get("/detail-view", async (req, res) => {
 
 movieRouter.post("/detail-view", async (req, res) => {
     try {
+        const { movie_id } = req.query;
         const commentInsert = new Comment(req.body);
         await commentInsert.save();
-        return res.send({ commentInsert });
+        const avgPointStorage = await Comment.aggregate([
+            {
+                '$match': { 'movie' : mongoose.Types.ObjectId(movie_id)}
+            },
+            {
+                '$group': {
+                    '_id': 'null',
+                    'pointSum': { '$sum': '$point' },
+                    'pointTotal': { '$sum': 1 },
+                }
+            },
+            {
+                '$project': {
+                    'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
+                }
+            }
+        ]);
+        console.log(avgPointStorage[0].avgPoint);
+        const movieUpdate = await Movie.findByIdAndUpdate(
+            movie_id,
+            { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+            { new: true },
+        );
+        return res.send({ movieUpdate, commentInsert });
     } catch (err) {
         console.log(err)
         return res.status(400).send({ err: err.message });
@@ -70,7 +94,30 @@ movieRouter.put("/detail-view", async (req, res) => {
             { $and: [{ movie: movie }, { member: member }]},
             { $set: { comment: comment ,  point: point }}
         );
-        return res.send({ commentUpdate });
+        const avgPointStorage = await Comment.aggregate([
+            {
+                '$match': { 'movie' : mongoose.Types.ObjectId(movie)}
+            },
+            {
+                '$group': {
+                    '_id': 'null',
+                    'pointSum': { '$sum': '$point' },
+                    'pointTotal': { '$sum': 1 },
+                }
+            },
+            {
+                '$project': {
+                    'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
+                }
+            }
+        ]);
+        console.log(avgPointStorage[0].avgPoint);
+        const movieUpdate = await Movie.findByIdAndUpdate(
+            movie,
+            { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+            { new: true },
+        );
+        return res.send({ movieUpdate, commentUpdate });
     } catch (err) {
         console.log(err)
         return res.status(400).send({ err: err.message });
@@ -83,7 +130,30 @@ movieRouter.delete("/detail-view", async (req, res) => {
         const commentDelete = await Comment.deleteOne(
             { $and: [{ movie: movie }, { member: member }] }
         );
-        return res.send({ commentDelete });
+        const avgPointStorage = await Comment.aggregate([
+            {
+                '$match': { 'movie' : mongoose.Types.ObjectId(movie)}
+            },
+            {
+                '$group': {
+                    '_id': 'null',
+                    'pointSum': { '$sum': '$point' },
+                    'pointTotal': { '$sum': 1 },
+                }
+            },
+            {
+                '$project': {
+                    'avgPoint': { '$divide': ['$pointSum', '$pointTotal'] },
+                }
+            }
+        ]);
+        console.log(avgPointStorage[0].avgPoint);
+        const movieUpdate = await Movie.findByIdAndUpdate(
+            movie,
+            { $set: {scores:{avgPoint : avgPointStorage[0].avgPoint}} },
+            { new: true },
+        );
+        return res.send({ movieUpdate, commentDelete });
     } catch (err) {
         console.log(err)
         return res.status(404).send({ err: err.message });

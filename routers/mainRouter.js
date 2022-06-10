@@ -69,6 +69,24 @@ mainRouter.get("/", async (req, res) => {
     return res.send({ movies });
 });
 
+mainRouter.get('/logout', async (req, res) =>{
+    const session = req.session
+    try {
+        if (session.user_id) { // 세션 정보가 존재하는 경우
+            await req.session.destroy( (err) => {
+                if (err) {
+                console.log(err)
+                } else {
+                    res.redirect('/'); // 클라이언트를 첫 페이지로 이동
+                }
+            })
+        }
+    } catch (e) {
+        console.log(e);
+    }
+    res.redirect('/');
+});
+
 // mainRouter.post("/", async(req, res) => {
 //     try {
 //         const movie = new Movie(req.body);

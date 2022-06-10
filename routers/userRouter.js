@@ -54,22 +54,6 @@ userRouter.get("/mypage", async (req, res) => {
     }
 })
 
-userRouter.get('/logout', async (req, res) =>{
-    const session = req.session
-    try {
-        if (session.user_id) { // 세션 정보가 존재하는 경우
-            await req.session.destroy( (err) => {
-                if (err) {
-                console.log(err)
-                } else {
-                    res.redirect('/login'); // 클라이언트를 첫 페이지로 이동
-                }
-            })
-        }
-    } catch (e) {
-        console.log(e);
-    }
-    res.redirect('/login');
-})
+
 
 module.exports = userRouter;
