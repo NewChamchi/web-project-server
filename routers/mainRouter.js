@@ -76,15 +76,20 @@ mainRouter.get('/logout', async (req, res) =>{
             await req.session.destroy( (err) => {
                 if (err) {
                 console.log(err)
-                } else {
-                    res.redirect('/'); // 클라이언트를 첫 페이지로 이동
-                }
+                } 
             })
         }
     } catch (e) {
         console.log(e);
     }
-    res.redirect('/');
+    return req.send({});
+});
+
+mainRouter.get('/get_login_id', async(req, res) => {
+    const session = req.session
+    return res.send({
+        user_id: session.user_id
+    });
 });
 
 // mainRouter.post("/", async(req, res) => {
