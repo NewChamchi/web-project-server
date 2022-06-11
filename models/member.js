@@ -7,7 +7,7 @@ const MemberSchema = new Schema(
         phone : { type : String, required : true },
         id : { type : String, required : true },
         password : { type : String, required : true },
-        isAdmin : { type : Boolean, required : true},
+        isAdmin : { type : Boolean },
     },
     { timestamps: true }
 );
