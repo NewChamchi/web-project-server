@@ -100,9 +100,10 @@ mainRouter.get('/get_login_id', async(req, res) => {
             message : "현재 로그인 상태가 아닙니다."
         })
     } else {
+        member = await Member.find({id : session.user_id}, "_id id");
         return res.send({
             islogin : true,
-            user_id: session.user_id
+            member
         })
     }
 });
