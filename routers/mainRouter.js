@@ -70,19 +70,24 @@ mainRouter.get("/", async (req, res) => {
 });
 
 mainRouter.get('/logout', async (req, res) =>{
-    const session = req.session
+    const session = req.session;
     try {
         if (session.user_id) { // 세션 정보가 존재하는 경우
             await req.session.destroy( (err) => {
                 if (err) {
-                console.log(err)
+                console.log(err);
+                return res.send({
+                    result : "destory error"
+                });
                 } 
             })
         }
     } catch (e) {
         console.log(e);
     }
-    return req.send({});
+    return res.send({
+        result : "noError"
+    });
 });
 
 mainRouter.get('/get_login_id', async(req, res) => {
