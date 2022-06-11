@@ -5,8 +5,8 @@ const { Member } = require("../models/member");
 const { Ticketing } = require("../models/ticketing");
 const { Seat } = require("../models/seat");
 
-userRouter.get("/login", async (req, res) => {
-    const { id, password } = req.query;
+userRouter.post("/login", async (req, res) => {
+    const { id, password } = req.body;
     const member = await Member.find({
         $and: [
             { id: id },
