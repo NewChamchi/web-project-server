@@ -11,12 +11,12 @@ movieRouter.get("/", async (req, res) => {
     const { isGrade } = req.query;
     if (isGrade != 0) {
         const movies = await Movie.find({},
-            "_id contents.name contents.poster scores.bookingRate scores.avgPoint")
+            "_id contents.name contents.poster contents.release scores.bookingRate scores.avgPoint")
             .sort({ 'scores.bookingRate': 1 });
         return res.send({ movies });
     } else {
         const movies = await Movie.find({},
-            "_id contents.name contents.poster scores.bookingRate scores.avgPoint")
+            "_id contents.name contents.poster contents.release scores.bookingRate scores.avgPoint")
             .sort({ 'scores.avgPoint': 1 });
         return res.send({ movies });
     }

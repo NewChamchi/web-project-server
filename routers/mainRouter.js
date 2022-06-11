@@ -1,4 +1,5 @@
 const express = require("express");
+const { Member } = require("../models/member");
 const mainRouter = express.Router();
 const { Movie } = require("../models/movie");
 const { Ticketing } = require("../models/ticketing");
@@ -91,10 +92,19 @@ mainRouter.get('/logout', async (req, res) =>{
 });
 
 mainRouter.get('/get_login_id', async(req, res) => {
-    const session = req.session
-    return res.send({
-        user_id: session.user_id
-    });
+    const session = req.session;
+    console.log(session);
+    if (!session.user_id) {
+        return res.send({
+            islogin : false,
+            message : "현재 로그인 상태가 아닙니다."
+        })
+    } else {
+        return res.send({
+            islogin : true,
+            user_id: session.user_id
+        })
+    }
 });
 
 // mainRouter.post("/", async(req, res) => {

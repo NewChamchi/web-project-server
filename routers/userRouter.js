@@ -48,12 +48,6 @@ userRouter.post("/join", async (req, res) => {
     }
 });
 
-userRouter.get("/get_member_oid", async (req, res) => {
-    const { id } = req.query;
-    const member = await Member.find({ id: id }, "_id");
-    return res.send({ member });
-});
-
 userRouter.get("/mypage", async (req, res) => {
     try {
         const { member_id } = req.query;
