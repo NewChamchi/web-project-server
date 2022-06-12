@@ -14,7 +14,7 @@ theaterRouter.get("/", async (req, res) => {
 })
 
 theaterRouter.get("/ticket", async (req, res) => {
-    const movie = await Movie.find({}, "_id contents.name contents.ageLimit")
+    const movie = await Movie.find({ticketings: { $exists: true }}, "contents.name contents.ageLimit")
     return res.send({ movie });
 })
 
