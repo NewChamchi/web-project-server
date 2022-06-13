@@ -33,6 +33,7 @@ theaterRouter.get("/ticket/:movie_id", async (req, res) => {
     return res.send({ movie });
 })
 
+// 극장 페이지 3 ( + 예약된 좌석 보내줌 )
 theaterRouter.get("/ticket/seat/:ticketing_id", async (req, res) => {
     const { ticketing_id } = req.params;
     const seats = await Seat.find({ ticketing: ticketing_id }, "name position isBooked")
@@ -126,11 +127,21 @@ theaterRouter.get("/ticket/seat/:ticketing_id", async (req, res) => {
 theaterRouter.put("/ticket/seat/:ticketing_id", async (req, res) => {
     try {
         const { ticketing_id } = req.params;
-        const { nameArray, member, isBooked } = req.body;
-        const seatUpdate = await Seat.updateMany(
-            { $and: [{ name: { $in: nameArray } }, { ticketing: ticketing_id }] },
-            { $set: { member: member, isBooked: isBooked } }
-        )
+        const { nameArray, member, isBooked } = req.body; //nameArray : 좌석의 이름
+        
+        // 티켓 취소 시 seat에 저장된 멤버 날림
+        var seatUpdate;
+        if (isBooked == 1) {
+            seatUpdate = await Seat.updateMany(
+                { $and: [{ name: { $in: nameArray } }, { ticketing: ticketing_id }] },
+                { $set: { member: member, isBooked: isBooked } }
+            )
+        } else {
+            seatUpdate = await Seat.updateMany(
+                { $and: [{ name: { $in: nameArray } }, { ticketing: ticketing_id }] },
+                { $set: { isBooked: isBooked }, $unset: { member: member } }
+            )
+        }
         const SeatCountStorage = await Seat.aggregate([
             {
                 '$match': { 'ticketing': mongoose.Types.ObjectId(ticketing_id) }
