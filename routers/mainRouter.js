@@ -100,11 +100,24 @@ mainRouter.get('/get_login_id', async(req, res) => {
             message : "현재 로그인 상태가 아닙니다."
         })
     } else {
-        member = await Member.find({id : session.user_id}, "_id id");
+        member = await Member.find({id : session.user_id}, "_id id name");
         return res.send({
             islogin : true,
             member
         })
+    }
+});
+
+mainRouter.post('/post_seats', async (req, res) => {
+    try {
+        const seatInsert = new Seat(req.body);
+        await seatInsert.save();
+        return res.status(200).json({
+            success: true
+        });
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send({ err: err.message });
     }
 });
 

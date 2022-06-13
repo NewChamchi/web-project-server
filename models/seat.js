@@ -1,5 +1,5 @@
 const { Schema, model, Types } = require("mongoose");
-const SeatSchema = new Schema(
+const SeatSchema = new Schema( // 예매할때 객체 생성 후
     {
         name: { type: String, required: true },
         position: {
